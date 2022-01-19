@@ -411,11 +411,10 @@ public class PaperweightGetBlocks extends CharGetBlocks implements BukkitGetBloc
     @SuppressWarnings("rawtypes")
     public synchronized <T extends Future<T>> T call(IChunkSet set, Runnable finalizer) {
         forceLoadSections = false;
-        copy = createCopy ? new PaperweightGetBlocks_Copy(serverLevel) : null;
+        copy = createCopy ? new PaperweightGetBlocks_Copy(levelChunk) : null;
         try {
             ServerLevel nmsWorld = serverLevel;
             LevelChunk nmsChunk = ensureLoaded(nmsWorld, chunkX, chunkZ);
-            boolean fastmode = set.isFastMode() && Settings.settings().QUEUE.NO_TICK_FASTMODE;
 
             // Remove existing tiles. Create a copy so that we can remove blocks
             Map<BlockPos, BlockEntity> chunkTiles = new HashMap<>(nmsChunk.getBlockEntities());
@@ -462,6 +461,7 @@ public class PaperweightGetBlocks extends CharGetBlocks implements BukkitGetBloc
 
                     bitMask |= 1 << layer;
 
+                    // Changes may still be written to chunk SET
                     char[] tmp = set.load(layerNo);
                     char[] setArr = new char[4096];
                     System.arraycopy(tmp, 0, setArr, 0, 4096);
@@ -479,7 +479,7 @@ public class PaperweightGetBlocks extends CharGetBlocks implements BukkitGetBloc
                         LevelChunkSection newSection;
                         LevelChunkSection existingSection = levelChunkSections[layer];
                         if (existingSection == null) {
-                            newSection = PaperweightPlatformAdapter.newChunkSection(layerNo, setArr, fastmode, adapter);
+                            newSection = PaperweightPlatformAdapter.newChunkSection(layerNo, setArr, adapter);
                             if (PaperweightPlatformAdapter.setSectionAtomic(levelChunkSections, null, newSection, layer)) {
                                 updateGet(nmsChunk, levelChunkSections, newSection, setArr, layer);
                                 continue;
@@ -522,7 +522,6 @@ public class PaperweightGetBlocks extends CharGetBlocks implements BukkitGetBloc
                                             layerNo,
                                             this::loadPrivately,
                                             setArr,
-                                            fastmode,
                                             adapter
                                     );
                             if (!PaperweightPlatformAdapter.setSectionAtomic(
