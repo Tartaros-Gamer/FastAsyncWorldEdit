@@ -24,7 +24,7 @@ redprotect = "1.9.6"
 
 # Third party
 paperlib = "1.0.8-SNAPSHOT"
-bstats = "2.2.1"
+bstats = "3.0.0"
 serverlib = "2.3.1"
 paster = "1.1.4"
 sparsebitset = "1.2"
@@ -48,8 +48,8 @@ text = "3.0.4"
 piston = "0.5.7"
 
 # Tests
-mockito = "4.3.0"
-checker-qual = "3.21.1"
+mockito = "4.3.1"
+checker-qual = "3.21.2"
 
 # Gradle plugins
 pluginyml = "0.5.1"
